@@ -10,3 +10,7 @@
 # Linear regression vs Logistic regression
 # Classification
 * idea -> for binary class. only one output neuron with values form 0 to 1. For more categories -> output neuron for each of them.
+* Certainties -> target values in classification (0 for not the thing as 0 %, 1 for the thing as 100 %)
+* One hot encoding - for three classes, fist class is (1, 0, 0), second is (0, 1, 0), etc.
+# Handy
+* sigmoid function: real numbers to <0, 1>
