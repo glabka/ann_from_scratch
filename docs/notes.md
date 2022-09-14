@@ -12,5 +12,12 @@
 * idea -> for binary class. only one output neuron with values form 0 to 1. For more categories -> output neuron for each of them.
 * Certainties -> target values in classification (0 for not the thing as 0 %, 1 for the thing as 100 %)
 * One hot encoding - for three classes, fist class is (1, 0, 0), second is (0, 1, 0), etc.
-# Handy
+# dead neuron
+* output is zero for all training samples (in classification)
+* back propagation is not capable of reviving the neuron
+* can happen due to ReLU
+# Handy functions
 * sigmoid function: real numbers to <0, 1>
+* derivative of sigmoid
+* ReLu (Rectified Linear Unit) - 0 for x in (-inf, 0>, x for x in (0, inf)
+* Leaky ReLu (for dealing with dead neuron). Smaller slope for (-inf, 0> then for (0, inf)
