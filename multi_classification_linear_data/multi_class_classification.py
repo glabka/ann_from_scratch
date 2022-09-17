@@ -48,4 +48,4 @@ for i in range(len(act)):
     print(f"index: {i} ({correctness}): act = {act[i]}, target = {flowers_data.test_targets[i]}")
     if correctness:
         counter += 1
-print(f"result = {counter}/{len(flowers_data.test_targets)} which is {100*counter/len(flowers_data.test_targets):.3f} %")
+print(f"result = {counter}/{len(flowers_data.test_targets)} which is {100 * counter / len(flowers_data.test_targets):.3f} %")
