@@ -16,6 +16,10 @@
 * output is zero for all training samples (in classification)
 * back propagation is not capable of reviving the neuron
 * can happen due to ReLU
+# Vanishing gradient problem 
+* when value of gradients are too small because of derivative(s) calculated upon activation functions 
+* the gradient values can be so small, that the weight change is lost in computational precision
+* can happen for instance with derivative of sigmoid
 # Handy functions
 * sigmoid function: real numbers to <0, 1>
 * derivative of sigmoid
