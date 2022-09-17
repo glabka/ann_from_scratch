@@ -1,4 +1,5 @@
 # classification - three color of flowers, two parameters of the leafs
+# two layers (input, output)
 import math
 
 import flowers_data
