@@ -20,6 +20,16 @@
 * when value of gradients are too small because of derivative(s) calculated upon activation functions 
 * the gradient values can be so small, that the weight change is lost in computational precision
 * can happen for instance with derivative of sigmoid
+# Gradient Descent
+## Batch Gradient Descent
+* the whole training sample is used in learning in every step
+* not so hard to get stuck in local minimum
+## Stochastic Gradient Descent
+* uses only one training sample at each step -> higher changes for random bigger changes -> can more easily get out of local minimum apparently
+* more vulnerable to anomalies in data
+## Mini Batch Gradient descent
+* smaller part of training data are used for each step
+* first shuffle training data -> divide to mini batches
 # Handy functions
 * sigmoid function: real numbers to <0, 1>
 * derivative of sigmoid
