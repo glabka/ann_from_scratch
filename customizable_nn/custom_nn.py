@@ -10,6 +10,7 @@ class CustomNN:
     # prior funcs are derivations of what is summed as cost function (or something corresponding to that)
     def __init__(self, learning_rate, cost_fun, layers_dimensions, layers_act_funcs, delta_calc_funcs):
         self.weights_list = []
+        self.biases_list = []
         self.learning_rate = learning_rate
         self.cost_fun = cost_fun
         self.layers_act_funcs = layers_act_funcs
@@ -18,24 +19,49 @@ class CustomNN:
         for i in range(1, len(layers_dimensions)):
             input_dim = layers_dimensions[i - 1]
             output_dim = layers_dimensions[i]
-            # self.weights_list.append([[random.random() - 0.5 for _ in range(input_dim)] for _ in range(output_dim)]) # TODO uncomment
-            self.weights_list = [[[2, 0, 0], [0, 2, 0], [0, 0, 2]], [[-3, 0, 0], [0, -3, 0], [0, 0, -3]]] # TODO -delete -  debug
-            self.weights_list = [[[1, 0], [0, 1], [1, 1]], [[2, 0, 0], [0, -1, 0], [0, 0, 0]]]# TODO -delete -  debug
+            self.weights_list.append([[random.random() - 0.5 for _ in range(input_dim)] for _ in range(output_dim)]) # TODO uncomment
+            self.biases_list.append([random.random() - 0.5 for _ in range(output_dim)])
+        # self.weights_list = [[[2, 0, 0], [0, 2, 0], [0, 0, 2]], [[-3, 0, 0], [0, -3, 0], [0, 0, -3]]] # TODO -delete -  debug
+        # self.weights_list = [[[1, 0], [0, 1], [1, 1]], [[2, 0, 0], [0, -1, 0], [0, 0, 0]]]# TODO -delete -  debug
 
-    def mini_batch_learn(self, inputs, targets_l):
-        preds_l, act_o_l = list(zip(*[self.calc_preds(input) for input in inputs])) # _l as list for each input
+    def mini_batch_learn(self, inputs_l, targets_l):
+        preds_l, act_l = list(zip(*[self.calc_preds(input) for input in inputs_l])) # _l as list for each input
+        act_o_l = [act[-1] for act in act_l]
         cost = self.cost_fun(act_o_l, targets_l)
         print(f"cost: {cost}")
         print(f"len(preds_l) = len(batches) : {len(preds_l)}, len(preds_l[0] = len(numOfLayers) - 1: {len(preds_l[0])}, preds_l: {preds_l}")
         errors_d_l = [self.calc_error_d(preds, targets) for preds, targets in zip(preds_l, targets_l)]
         print(f"len(errors_d_l) = len(batch): {len(errors_d_l)}, len(errors_d[0]) = len(layers) - 1: {len(errors_d_l[0])}, errors_d_l: {errors_d_l}")
         # gradients - list for every batch' input
-        gradients_l = [gradients(errors_d_l, preds_l.inset(0, inputs))]
+        w_d_l = [self.gradients(errors_d, [inputs, *act]) for errors_d, inputs, act in zip(errors_d_l, inputs_l, act_l)] # weights deltas for every layer and every batch input
+        b_d_l = errors_d_l # bias deltas list for all layers and every batch input
+        w_d = CustomNN.div_matrix_by_scalar(CustomNN.sum_matrices(w_d_l), len(w_d_l)) # averange weight deltas
+        b_d = [sum(b_num) / len(b_d_l) for b_num in list(zip(*b_d_l))]
+        # weights and bias update
+        for weights, weights_d, biases, biases_d in zip(self.weights_list, w_d, self.biases_list, b_d): # for every layer transition
+            for i in range(len(weights)):
+                for j in range(len(weights[0])):
+                    weights[i][j] -= self.learning_rate * weights_d[i][j]
+                biases[i] -= biases_d[i]
+    @staticmethod
+    def div_matrix_by_scalar(matrix, scalar):
+        return [[num / scalar for num in row] for row in matrix]
 
-
-    def gradients(self, errors_d_l, preds_and_inp):
-        return None # TODO
-
+    @staticmethod
+    def sum_matrices(matrix_l):
+        matrix_result = matrix_l[0]
+        for i in range(1, len(matrix_l)):
+            for j in range(matrix_result):
+                for k in range(matrix_result[0]):
+                    matrix_result[j][k] += matrix_l[i][j][k]
+    # error_d - error deltas for every layer
+    # act_and_inp - activations of every layer plus input
+    def gradients(self, errors_d, act_and_inp):
+        w_d = [] # weights deltas for every layer
+        # TODO input parameters dimensions should match - input is special case - look into it
+        for err_layer, act in zip(errors_d, act_and_inp):
+            w_d.append([[d * a for d in err_layer] for a in act])
+        return w_d
 
     # inputs - column vector.
     # return tuple contining list of prediction and of all layers as column vectors and list of activations from last layer
@@ -46,12 +72,13 @@ class CustomNN:
         for i in range(len(self.weights_list)):
             if i == 0:
                 print(f"input: {input}, weights: {self.weights_list[i]}")
-                preds.append(self.matrix_mult_vector(self.weights_list[i], input))
+                matrix_mult_result = self.matrix_mult_vector(self.weights_list[i], input)
             else :
                 print(f"input: {preds[i - 1]}, weights: {self.weights_list[i]}")
-                preds.append(self.matrix_mult_vector(self.weights_list[i], acts[i - 1]))
+                matrix_mult_result =self.matrix_mult_vector(self.weights_list[i], acts[i - 1])
+            preds.append([num + b for num, b in zip(matrix_mult_result, self.biases_list[i])])
             acts.append(self.layers_act_funcs[i](preds[i]))
-        return preds, acts[-1]
+        return preds, acts
 
     # a x b
     # A - column vector -> represented by list of numbers
