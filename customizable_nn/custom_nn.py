@@ -35,8 +35,8 @@ class CustomNN:
         # gradients - list for every batch' input
         w_d_l = [self.gradients(errors_d, [inputs, *act]) for errors_d, inputs, act in zip(errors_d_l, inputs_l, act_l)] # weights deltas for every layer and every batch input
         b_d_l = errors_d_l # bias deltas list for all layers and every batch input
-        w_d = CustomNN.div_matrix_by_scalar(CustomNN.sum_matrices(w_d_l), len(w_d_l)) # averange weight deltas
-        b_d = [sum(b_num) / len(b_d_l) for b_num in list(zip(*b_d_l))]
+        w_d = [CustomNN.div_matrix_by_scalar(CustomNN.sum_matrices(w_d_layer), len(w_d_layer)) for w_d_layer in list(zip(*w_d_l))] # averange weight deltas
+        b_d = [[sum(num_l) / len(b_d_layer_l) for num_l in list(zip(*b_d_layer_l))] for b_d_layer_l in list(zip(*b_d_l))]
         # weights and bias update
         for weights, weights_d, biases, biases_d in zip(self.weights_list, w_d, self.biases_list, b_d): # for every layer transition
             for i in range(len(weights)):
@@ -49,18 +49,20 @@ class CustomNN:
 
     @staticmethod
     def sum_matrices(matrix_l):
-        matrix_result = matrix_l[0]
+        matrix_result = [[num for num in row] for row in matrix_l[0]] # copying first matrix
         for i in range(1, len(matrix_l)):
-            for j in range(matrix_result):
-                for k in range(matrix_result[0]):
-                    matrix_result[j][k] += matrix_l[i][j][k]
+            for j in range(len(matrix_l[i])):
+                for k in range(len(matrix_l[i][j])):
+                    matrix_result[j][k] = matrix_result[j][k] + matrix_l[i][j][k]
+        return matrix_result
+
     # error_d - error deltas for every layer
     # act_and_inp - activations of every layer plus input
     def gradients(self, errors_d, act_and_inp):
         w_d = [] # weights deltas for every layer
-        # TODO input parameters dimensions should match - input is special case - look into it
-        for err_layer, act in zip(errors_d, act_and_inp):
-            w_d.append([[d * a for d in err_layer] for a in act])
+        for err_layer, act in zip(errors_d, act_and_inp): # output (last) act values are ignored
+            # w_d.append([[d * a for d in err_layer] for a in act])
+            w_d.append([[d * a for a in act] for d in err_layer])
         return w_d
 
     # inputs - column vector.
