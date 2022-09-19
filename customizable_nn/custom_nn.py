@@ -21,8 +21,10 @@ class CustomNN:
             output_dim = layers_dimensions[i]
             self.weights_list.append([[random.random() - 0.5 for _ in range(input_dim)] for _ in range(output_dim)]) # TODO uncomment
             self.biases_list.append([random.random() - 0.5 for _ in range(output_dim)])
-        # self.weights_list = [[[2, 0, 0], [0, 2, 0], [0, 0, 2]], [[-3, 0, 0], [0, -3, 0], [0, 0, -3]]] # TODO -delete -  debug
-        # self.weights_list = [[[1, 0], [0, 1], [1, 1]], [[2, 0, 0], [0, -1, 0], [0, 0, 0]]]# TODO -delete -  debug
+
+    def get_pred(self, input):
+        _, act = self.calc_preds(input)
+        return act[-1]
 
     def mini_batch_learn(self, inputs_l, targets_l):
         preds_l, act_l = list(zip(*[self.calc_preds(input) for input in inputs_l])) # _l as list for each input
@@ -61,7 +63,6 @@ class CustomNN:
     def gradients(self, errors_d, act_and_inp):
         w_d = [] # weights deltas for every layer
         for err_layer, act in zip(errors_d, act_and_inp): # output (last) act values are ignored
-            # w_d.append([[d * a for d in err_layer] for a in act])
             w_d.append([[d * a for a in act] for d in err_layer])
         return w_d
 
@@ -70,13 +71,13 @@ class CustomNN:
     def calc_preds(self, input):
         preds = []
         acts = []
-        print(f"len(weights_list): {len(self.weights_list)}")
+        # print(f"len(weights_list): {len(self.weights_list)}")
         for i in range(len(self.weights_list)):
             if i == 0:
-                print(f"input: {input}, weights: {self.weights_list[i]}")
+                # print(f"input: {input}, weights: {self.weights_list[i]}")
                 matrix_mult_result = self.matrix_mult_vector(self.weights_list[i], input)
             else :
-                print(f"input: {preds[i - 1]}, weights: {self.weights_list[i]}")
+                # print(f"input: {preds[i - 1]}, weights: {self.weights_list[i]}")
                 matrix_mult_result =self.matrix_mult_vector(self.weights_list[i], acts[i - 1])
             preds.append([num + b for num, b in zip(matrix_mult_result, self.biases_list[i])])
             acts.append(self.layers_act_funcs[i](preds[i]))
@@ -113,9 +114,8 @@ class CustomNN:
     # deep copy basically (doesn't affect original matrix)
     @staticmethod
     def transpose(m):
-        print(f"transposing: {m}")
+        # print(f"transposing: {m}")
         return list(zip(*m))
-        # return [list(a) for a in zip(*m)]
 
     # preds - list of predictions of every layer
     # targets - list of targets
