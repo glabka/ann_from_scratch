@@ -1,33 +1,16 @@
 import math
 
 from customizable_nn.custom_nn import CustomNN
+from customizable_nn.functions import cost_fun, soft_max, relu_d, diff
 from multi_classification_nonlinear_data import flowers_data
-
-
-def relu(pred):
-    return [max(0, p) for p in pred]
-
-def relu_d(pred):
-    return 0 if pred <= 0 else 1
-
-def soft_max(predictions):
-    m = max(predictions)
-    tmp = [math.exp(p - m) for p in predictions]
-    total = sum(tmp)
-    return [t / total for t in tmp]
-
-def log_loss(act, target):
-    return -target * math.log(act) - (1 - target) * math.log(1 - act)
-
-def cost_fun(act_o_l, targets_l):
-    return sum([sum([log_loss(a, t) for a, t in zip(act, tg)]) for act, tg in zip(act_o_l, targets_l)]) / len(targets_l)
-
-def diff(a, t):
-    return a - t
-
+from multi_classification_nonlinear_data.classif_network import relu
 
 nn = CustomNN(0.5, cost_fun, [2, 4, 3], [relu, soft_max], [relu_d, diff])
 epochs = 3300
+# nn = CustomNN(0.5, cost_fun, [2, 5, 3], [relu, soft_max], [relu_d, diff])
+# epochs = 3300
+# nn = CustomNN(0.25, cost_fun, [2, 4, 3, 4, 3], [leaky_relu, leaky_relu, leaky_relu, soft_max], [leaky_relu_d, leaky_relu_d, leaky_relu_d, diff])
+# epochs = 1000
 for epoch in range(epochs):
     print(f"--------------- epoch: {epoch} ---------------")
     nn.mini_batch_learn(flowers_data.inputs, flowers_data.targets)

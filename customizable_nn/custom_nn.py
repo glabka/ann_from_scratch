@@ -31,9 +31,9 @@ class CustomNN:
         act_o_l = [act[-1] for act in act_l]
         cost = self.cost_fun(act_o_l, targets_l)
         print(f"cost: {cost}")
-        print(f"len(preds_l) = len(batches) : {len(preds_l)}, len(preds_l[0] = len(numOfLayers) - 1: {len(preds_l[0])}, preds_l: {preds_l}")
+        # print(f"len(preds_l) = len(batches) : {len(preds_l)}, len(preds_l[0] = len(numOfLayers) - 1: {len(preds_l[0])}, preds_l: {preds_l}")
         errors_d_l = [self.calc_error_d(preds, targets) for preds, targets in zip(preds_l, targets_l)]
-        print(f"len(errors_d_l) = len(batch): {len(errors_d_l)}, len(errors_d[0]) = len(layers) - 1: {len(errors_d_l[0])}, errors_d_l: {errors_d_l}")
+        # print(f"len(errors_d_l) = len(batch): {len(errors_d_l)}, len(errors_d[0]) = len(layers) - 1: {len(errors_d_l[0])}, errors_d_l: {errors_d_l}")
         # gradients - list for every batch' input
         w_d_l = [self.gradients(errors_d, [inputs, *act]) for errors_d, inputs, act in zip(errors_d_l, inputs_l, act_l)] # weights deltas for every layer and every batch input
         b_d_l = errors_d_l # bias deltas list for all layers and every batch input
