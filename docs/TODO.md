@@ -5,3 +5,4 @@
 * error derivative for log_loss
 * hidden layer error derivative -> why transpose matrix and element wise derivative of activation function (why not division)
 * nonlinear example => try with leaky ReLu
+* speeding up things using numPy, then using TensorFlow or PyTorch
