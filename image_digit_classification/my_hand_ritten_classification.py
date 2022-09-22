@@ -5,7 +5,9 @@ from customizable_nn.functions import cost_fun, relu, soft_max, relu_d, diff
 epochs = 3
 batch_size = 2000
 
-nn = CustomNN(0.2, cost_fun, [28*28, 50, 30, 10], [relu, relu, soft_max], [relu_d, relu_d, diff])
+# nn1 = CustomNN(0.2, cost_fun, [28*28, 50, 30, 10], [relu, relu, soft_max], [relu_d, relu_d, diff])
+nn2 = CustomNN(0.5, cost_fun, [28*28, 20, 10], [relu, soft_max], [relu_d, diff])
+nn = nn2
 for epoch in range(epochs):
     print(f"--------------- epoch: {epoch} ---------------")
     counter = 0
@@ -27,5 +29,7 @@ for p, tg in zip(predictions, test_targets):
     print(f"correct: {correct}, pred = {p}, targets = {tg}")
     if correct:
         counter += 1
-print(f"categorized {counter}/{len(test_targets)} which is {100*counter/len(test_targets)} %") # classifies correctly circa 43 % for 1 epoch, 67 % for 3 epochs
+print(f"categorized {counter}/{len(test_targets)} which is {100*counter/len(test_targets)} %")
+# nn1 classifies correctly circa 43 % for 1 epoch, 67 % for 3 epochs
+# nn2 classifies correctly circa 70 % fbr 3 epochs
 
