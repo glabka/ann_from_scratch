@@ -2,6 +2,13 @@ import mnist_data_reader as reader
 from customizable_nn.custom_nn import CustomNN
 from customizable_nn.functions import cost_fun, relu, soft_max, relu_d, diff
 
+# labels, targets, inputs = reader.get_test_samples()
+# for v, i in zip(labels[:10], inputs[:10]):
+#     print(v)
+#     reader.plot_number(i)
+#     print()
+# exit()
+
 epochs = 3
 batch_size = 2000
 
@@ -12,14 +19,9 @@ for epoch in range(epochs):
     print(f"--------------- epoch: {epoch} ---------------")
     counter = 0
     for labels, targets, inputs in reader.get_training_samples(batch_size):
+        print(f"mini_batch: {counter} - ", end="")
         nn.mini_batch_learn(inputs, targets)
         counter += 1
-
-# labels, targets, inputs = reader.get_test_samples()
-# for v, i in zip(labels[:10], inputs[:10]):
-#     print(v)
-#     reader.plot_number(i)
-#     print()
 
 test_labels, test_targets, test_inputs = reader.get_test_samples()
 predictions = [nn.get_pred(t_i) for t_i in test_inputs]
