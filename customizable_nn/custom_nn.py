@@ -6,7 +6,7 @@ class CustomNN:
     # cost_fun - input predictions, targets
     # layers_dimensions contains dimensions of and output layer as well as all hidden layers. Order is from input to output layer.
     # layers_act_funcs - can be None, they are meant to work on the whole output of a layer. Input doesn't have act_fun
-    # delta_calc_funs - last is func for last layer that take as argument predicted activation value and corresponding target value. Input doesn't have delta_calc or act_d funcs
+    # delta_calc_funs - Activation functions. Input doesn't have delta_calc or act_d funcs
     # prior funcs are derivations of what is summed as cost function (or something corresponding to that)
     def __init__(self, learning_rate, cost_fun, layers_dimensions, layers_act_funcs, delta_calc_funcs):
         self.weights_list = []
@@ -19,7 +19,7 @@ class CustomNN:
         for i in range(1, len(layers_dimensions)):
             input_dim = layers_dimensions[i - 1]
             output_dim = layers_dimensions[i]
-            self.weights_list.append([[random.random() - 0.5 for _ in range(input_dim)] for _ in range(output_dim)]) # TODO uncomment
+            self.weights_list.append([[random.random() - 0.5 for _ in range(input_dim)] for _ in range(output_dim)]) 
             self.biases_list.append([random.random() - 0.5 for _ in range(output_dim)])
 
     def get_pred(self, input):
@@ -37,7 +37,7 @@ class CustomNN:
         # gradients - list for every batch' input
         w_d_l = [self.gradients(errors_d, [inputs, *act]) for errors_d, inputs, act in zip(errors_d_l, inputs_l, act_l)] # weights deltas for every layer and every batch input
         b_d_l = errors_d_l # bias deltas list for all layers and every batch input
-        w_d = [CustomNN.div_matrix_by_scalar(CustomNN.sum_matrices(w_d_layer), len(w_d_layer)) for w_d_layer in list(zip(*w_d_l))] # averange weight deltas
+        w_d = [CustomNN.div_matrix_by_scalar(CustomNN.sum_matrices(w_d_layer), len(w_d_layer)) for w_d_layer in list(zip(*w_d_l))] # averange weight deltas above all batch samples
         b_d = [[sum(num_l) / len(b_d_layer_l) for num_l in list(zip(*b_d_layer_l))] for b_d_layer_l in list(zip(*b_d_l))]
         # weights and bias update
         for weights, weights_d, biases, biases_d in zip(self.weights_list, w_d, self.biases_list, b_d): # for every layer transition
@@ -45,6 +45,7 @@ class CustomNN:
                 for j in range(len(weights[0])):
                     weights[i][j] -= self.learning_rate * weights_d[i][j]
                 biases[i] -= biases_d[i]
+
     @staticmethod
     def div_matrix_by_scalar(matrix, scalar):
         return [[num / scalar for num in row] for row in matrix]
@@ -67,7 +68,7 @@ class CustomNN:
         return w_d
 
     # inputs - column vector.
-    # return tuple contining list of prediction and of all layers as column vectors and list of activations from last layer
+    # return tuple contining list of prediction aof all layers as column vectors as well as list of activations 
     def calc_preds(self, input):
         preds = []
         acts = []
@@ -78,7 +79,7 @@ class CustomNN:
                 matrix_mult_result = self.matrix_mult_vector(self.weights_list[i], input)
             else :
                 # print(f"input: {preds[i - 1]}, weights: {self.weights_list[i]}")
-                matrix_mult_result =self.matrix_mult_vector(self.weights_list[i], acts[i - 1])
+                matrix_mult_result = self.matrix_mult_vector(self.weights_list[i], acts[i - 1])
             preds.append([num + b for num, b in zip(matrix_mult_result, self.biases_list[i])])
             acts.append(self.layers_act_funcs[i](preds[i]))
         return preds, acts
